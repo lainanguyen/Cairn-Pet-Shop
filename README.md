@@ -19,3 +19,5 @@ The name of our business is Blue Collar Pets. Blue Collar Pets is a pet store th
 
 # Color Palette
 
+<img width="607" alt="Screenshot 2024-10-31 at 10 02 22 AM" src="https://github.com/user-attachments/assets/abb50941-d2ea-4107-8a96-39f600fc56b3">
+
