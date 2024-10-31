@@ -17,3 +17,5 @@ The name of our business is Blue Collar Pets. Blue Collar Pets is a pet store th
 * Adoption Inquiry Page
 
 
+# Color Palette
+
