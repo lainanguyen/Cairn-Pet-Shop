@@ -3,17 +3,19 @@ require_once 'config.php';
 require_once 'db.php';
 require_once 'functions.php';
 
-// Initialize session if not already started
+// Configure session cookie parameters BEFORE session_start()
+$cookieParams = session_get_cookie_params();
+session_set_cookie_params([
+    'lifetime' => 86400, // Set to 24 hours instead of using default
+    'path' => '/',
+    'domain' => '',  // Leave empty to use current domain
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
-    $cookieParams = session_get_cookie_params();
-    session_set_cookie_params([
-        'lifetime' => $cookieParams["lifetime"],
-        'path' => '/',
-        'domain' => $_SERVER['HTTP_HOST'],
-        'secure' => true,
-        'httponly' => true,
-        'samesite' => 'Lax'
-    ]);
     session_start();
 }
 

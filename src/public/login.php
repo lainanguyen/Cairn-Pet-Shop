@@ -5,7 +5,7 @@ require_once '../includes/authentication.php';
 if (isLoggedIn()) {
     // Redirect based on role
     if (isAdmin()) {
-        header("Location: ../admin/dashboard.php");
+        header("Location: ../manage-users.php");
     } elseif (isEmployee()) {
         header("Location: ../employee/dashboard.php");
     } else {
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             // Redirect based on role
             if (isAdmin()) {
-                header("Location: ../admin/dashboard.php");
+                header("Location: ../admin/manage-users.php");
             } elseif (isEmployee()) {
                 header("Location: ../employee/dashboard.php");
             } else {

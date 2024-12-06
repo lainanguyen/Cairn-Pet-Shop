@@ -1,6 +1,6 @@
 <?php
 require_once '../includes/config.php';
-require_once '../includes/auth.php';
+require_once '../includes/authentication.php';
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $animalData['adoption_fee'],
                         $animalData['status'],
                         $_SESSION['user_id']
-                    ], "sssssssssssdss");
+                    ], "ssssdssssssdss");
 
                     $success_message = "Animal added successfully!";
                 } else {
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $animalData['adoption_fee'],
                         $animalData['status'],
                         $animalId
-                    ], "sssdssssssds");
+                    ], "sssdssssssdss");
 
                     $success_message = "Animal updated successfully!";
                 }
