@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Pets - Blue Collar Pets</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
     <style>
         .search-container {
             width: 100%;
@@ -113,22 +113,7 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <header>
-        <div class="logo">
-            <a href="index.html">
-                <img src="images/logo.png" alt="Blue Collar Pets Logo">
-            </a>
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#about">About us</a></li>
-                <li><a href="#animals">Animals</a></li>
-                <li><a href="question_form.html">Contact</a></li>
-                <li><a href="#reviews">Reviews</a></li>
-            </ul>
-        </nav>
-    </header>
+
 
     <!-- Main Content -->
     <h1 class="section-title">Find Your Perfect Pet</h1>

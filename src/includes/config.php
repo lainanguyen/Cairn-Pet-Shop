@@ -1,73 +1,23 @@
 <?php
-// config.php - Database configuration
-define('DB_SERVER', 'localhost');
-define('DB_USERNAME', 'your_username');
-define('DB_PASSWORD', 'your_password');
-define('DB_NAME', 'blue_collar_pets');
 
-// Establish database connection
-function connectDB()
-{
-    $conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
+// Database configuration
+define('DB_SERVER', '54.165.204.136');
+define('DB_USERNAME', 'group4');
+define('DB_PASSWORD', '615fre907ncX8]');
+define('DB_NAME', 'group4');
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+// Application configuration
+//define('SITE_NAME', 'Blue Collar Pets');
+define('BASE_URL', '/'); // Update this based on your server configuration
 
-    return $conn;
-}
+// Error reporting - set to 0 in production
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Start session management
-session_start();
+// Timezone
+//date_default_timezone_set('America/New York');
 
-// User authentication function
-function authenticateUser($email, $password)
-{
-    $conn = connectDB();
-
-    $sql = "SELECT id, email, password, role FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows === 1) {
-        $user = $result->fetch_assoc();
-        if (password_verify($password, $user['password'])) {
-            // Set session variables
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'];
-            return true;
-        }
-    }
-    return false;
-}
-
-// Check if user is logged in
-function isLoggedIn()
-{
-    return isset($_SESSION['user_id']);
-}
-
-// Check if user is admin
-function isAdmin()
-{
-    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-}
-
-// Check if user is employee
-function isEmployee()
-{
-    return isset($_SESSION['role']) &&
-        ($_SESSION['role'] === 'employee' || $_SESSION['role'] === 'admin');
-}
-
-// Logout function
-function logout()
-{
-    session_start();
-    session_destroy();
-    header("Location: login.php");
-    exit();
-}
+// Directory paths
+define('ROOT_DIR', dirname(__DIR__));
+define('INCLUDES_DIR', ROOT_DIR . '/includes');
+define('UPLOADS_DIR', ROOT_DIR . '/uploads');
