@@ -116,6 +116,27 @@ require_once 'authentication.php';
         .employee .user-icon {
             background-color: #28a745;
         }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            border-radius: 10px;
+            background-color: #3693F0;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .dropdown-content a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body>
@@ -163,11 +184,31 @@ require_once 'authentication.php';
                             <a href="../public/logout.php">Logout</a>
                         <?php else: ?>
                             <!-- Regular User Menu -->
-                            <a href="../public/profile.php">My Profile</a>
-                            <a href="../public/application-status.php">My Applications</a>
-                            <a href="../public/saved-pets.php">Saved Pets</a>
-                            <div class="dropdown-divider"></div>
-                            <a href="../public/logout.php">Logout</a>
+                            <div class="dropdown-content">
+                                <a href="../public/profile.php">My Profile</a>
+                                <a href="../public/application-status.php">My Applications</a>
+                                <a href="../public/saved-pets.php">
+                                    Saved Pets:
+                                    <?php
+                                    // Add saved pets count badge if user has any saved pets
+                                    try {
+                                        $conn = connectDB();
+                                        $stmt = prepareStatement($conn,
+                                            "SELECT COUNT(*) as count FROM saved_pets WHERE user_id = ?"
+                                        );
+                                        executeStatement($stmt, [$_SESSION['user_id']], "s");
+                                        $saved_count = $stmt->get_result()->fetch_assoc()['count'];
+                                        if ($saved_count > 0) {
+                                            echo '<span class="badge">' . $saved_count . '</span>';
+                                        }
+                                    } catch (Exception $e) {
+                                        // Silently fail - no need to show error for badge
+                                    }
+                                    ?>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a href="../public/logout.php">Logout</a>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </li>

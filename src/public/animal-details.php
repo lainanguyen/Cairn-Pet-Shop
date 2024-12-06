@@ -50,62 +50,84 @@ try {
     executeStatement($stmt, [$animal_id], "s");
     $additional_images = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
+    // Check if pet is saved by current user
+    $is_saved = isLoggedIn() ? isPetSaved($_SESSION['user_id'], $animal_id) : false;
+
 } catch (Exception $e) {
     error_log("Error fetching animal details: " . $e->getMessage());
     $error_message = "An error occurred while fetching the pet details.";
 }
 
-// Handle application submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'apply') {
+// Handle form submissions
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (!isLoggedIn()) {
-            throw new Exception("Please log in to submit an adoption application.");
+            throw new Exception("Please log in first.");
         }
 
-        // Verify animal is still available
-        if ($animal['status'] !== 'available') {
-            throw new Exception("Sorry, this pet is no longer available for adoption.");
+        switch ($_POST['action']) {
+            case 'toggle_save':
+                if ($is_saved) {
+                    if (unsavePet($_SESSION['user_id'], $animal_id)) {
+                        $success_message = "Pet removed from your saved list.";
+                        $is_saved = false;
+                    }
+                } else {
+                    if (savePet($_SESSION['user_id'], $animal_id)) {
+                        $success_message = "Pet added to your saved list!";
+                        $is_saved = true;
+                    }
+                }
+                break;
+
+            case 'apply':
+                // Verify animal is still available
+                if ($animal['status'] !== 'available') {
+                    throw new Exception("Sorry, this pet is no longer available for adoption.");
+                }
+
+                // Create adoption application
+                $applicationId = generateUUID();
+                $stmt = prepareStatement($conn,
+                    "INSERT INTO adoption_applications (
+                        application_id, animal_id, user_id, status,
+                        home_type, has_yard, other_pets, household_members,
+                        previous_pet_experience, employment_status,
+                        application_date
+                    ) VALUES (?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
+                );
+
+                executeStatement($stmt, [
+                    $applicationId,
+                    $animal_id,
+                    $_SESSION['user_id'],
+                    sanitizeInput($_POST['home_type']),
+                    isset($_POST['has_yard']) ? 1 : 0,
+                    sanitizeInput($_POST['other_pets']),
+                    intval($_POST['household_members']),
+                    sanitizeInput($_POST['previous_pet_experience']),
+                    sanitizeInput($_POST['employment_status'])
+                ], "sssssisis");
+
+                // Update animal status to pending
+                $stmt = prepareStatement($conn,
+                    "UPDATE animals SET status = 'pending' WHERE animal_id = ?"
+                );
+                executeStatement($stmt, [$animal_id], "s");
+
+                $success_message = "Your adoption application has been submitted successfully!";
+
+                // Redirect to prevent form resubmission
+                header("Location: application-status.php?id=" . $applicationId);
+                exit();
+                break;
         }
-
-        // Create adoption application
-        $applicationId = generateUUID();
-        $stmt = prepareStatement($conn,
-            "INSERT INTO adoption_applications (
-                application_id, animal_id, user_id, status,
-                home_type, has_yard, other_pets, household_members,
-                previous_pet_experience, employment_status,
-                application_date
-            ) VALUES (?, ?, ?, 'pending', ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)"
-        );
-
-        executeStatement($stmt, [
-            $applicationId,
-            $animal_id,
-            $_SESSION['user_id'],
-            sanitizeInput($_POST['home_type']),
-            isset($_POST['has_yard']) ? 1 : 0,
-            sanitizeInput($_POST['other_pets']),
-            intval($_POST['household_members']),
-            sanitizeInput($_POST['previous_pet_experience']),
-            sanitizeInput($_POST['employment_status'])
-        ], "sssssisis");
-
-        // Update animal status to pending
-        $stmt = prepareStatement($conn,
-            "UPDATE animals SET status = 'pending' WHERE animal_id = ?"
-        );
-        executeStatement($stmt, [$animal_id], "s");
-
-        $success_message = "Your adoption application has been submitted successfully!";
-
-        // Redirect to prevent form resubmission
-        header("Location: application-status.php?id=" . $applicationId);
-        exit();
-
     } catch (Exception $e) {
         $error_message = $e->getMessage();
     }
 }
+
+// Rest of your existing HTML remains the same...
 ?>
 
 <!DOCTYPE html>
@@ -398,6 +420,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             <div class="adoption-fee">
                 Adoption Fee: $<?php echo number_format($animal['adoption_fee'], 2); ?>
             </div>
+
+            <?php if (isLoggedIn()): ?>
+                <form method="POST" style="margin-bottom: 20px;">
+                    <input type="hidden" name="action" value="toggle_save">
+                    <button type="submit" class="action-button" style="background-color: <?php echo $is_saved ? '#dc3545' : '#3693F0'; ?>">
+                        <?php echo $is_saved ? 'Remove from Saved Pets' : 'Save This Pet'; ?>
+                    </button>
+                </form>
+            <?php else: ?>
+                <a href="../public/login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>"
+                   class="action-button">
+                    Login to Save This Pet
+                </a>
+            <?php endif; ?>
 
             <?php if ($animal['status'] === 'available'): ?>
             <?php if (isLoggedIn()): ?>

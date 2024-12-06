@@ -120,3 +120,101 @@ function getPaginationData($page, $totalItems, $itemsPerPage = 10) {
         'offset' => $offset
     ];
 }
+
+
+// Add these functions to functions.php
+
+/**
+ * Save a pet for a user
+ */
+function savePet($userId, $animalId)
+{
+    try {
+        $conn = connectDB();
+
+        // Check if already saved
+        if (isPetSaved($userId, $animalId)) {
+            return false;
+        }
+
+        $stmt = prepareStatement($conn,
+            "INSERT INTO saved_pets (id, user_id, animal_id)
+             VALUES (?, ?, ?)"
+        );
+        executeStatement($stmt, [
+            generateUUID(),
+            $userId,
+            $animalId
+        ], "sss");
+
+        return true;
+    } catch (Exception $e) {
+        error_log("Error saving pet: " . $e->getMessage());
+        throw $e;
+    }
+}
+
+/**
+ * Remove a pet from user's saved list
+ */
+function unsavePet($userId, $animalId)
+{
+    try {
+        $conn = connectDB();
+
+        // Check if saved first
+        if (!isPetSaved($userId, $animalId)) {
+            return false;
+        }
+
+        $stmt = prepareStatement($conn,
+            "DELETE FROM saved_pets 
+             WHERE user_id = ? AND animal_id = ?"
+        );
+        executeStatement($stmt, [$userId, $animalId], "ss");
+
+        return true;
+    } catch (Exception $e) {
+        error_log("Error unsaving pet: " . $e->getMessage());
+        throw $e;
+    }
+}
+
+/**
+ * Check if a pet is saved by a user
+ */
+function isPetSaved($userId, $animalId)
+{
+    try {
+        $conn = connectDB();
+        $stmt = prepareStatement($conn,
+            "SELECT id FROM saved_pets 
+             WHERE user_id = ? AND animal_id = ?"
+        );
+        executeStatement($stmt, [$userId, $animalId], "ss");
+        return $stmt->get_result()->fetch_assoc() !== null;
+    } catch (Exception $e) {
+        error_log("Error checking saved pet: " . $e->getMessage());
+        throw $e;
+    }
+}
+
+/**
+ * Get count of saved pets for a user
+ */
+function getSavedPetsCount($userId)
+{
+    try {
+        $conn = connectDB();
+        $stmt = prepareStatement($conn,
+            "SELECT COUNT(*) as count 
+             FROM saved_pets 
+             WHERE user_id = ?"
+        );
+        executeStatement($stmt, [$userId], "s");
+        return $stmt->get_result()->fetch_assoc()['count'];
+    } catch (Exception $e) {
+        error_log("Error getting saved pets count: " . $e->getMessage());
+        return 0;
+    }
+}
