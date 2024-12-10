@@ -83,7 +83,35 @@ include '../includes/header.php';
             <p>"Great selection of pet supplies and friendly advice. Prices are reasonable too."</p>
             <p>- Oliver B.</p>
         </div>
-    </div>
+        <!-- Review 6 -->
+        <div class="review">
+            <h3>Great Employees <span class="stars">★★★★★</span></h3>
+            <p>"Jessica helped me out today. She was wonderful. This shop is wonderful! :)"</p>
+            <p>- Mia S.</p>
+        </div>
 
+
+        <!-- Review 7 -->
+        <div class="review">
+            <h3>Best Store Ever <span class="stars">★★★★★</span></h3>
+            <p>"The store has been there for all my pet needs!"</p>
+            <p>- Nolan Q.</p>
+        </div>
+
+
+        <!-- Review 8 -->
+        <div class="review">
+            <h3> Horrible Parking <span class="stars">★★★☆☆</span></h3>
+            <p>"The parking situation at most stores is crazy. It takes me 10 minutes to find a spot!"</p>
+            <p>- Liam W.</p>
+        </div>
+
+        <!-- Review 9-->
+        <div class="review">
+            <h3> Wonderful Pets <span class="stars">★★★★★</span></h3>
+            <p>"I just adopted my first cat through them. The process was super easy and they accepted my application within 2 weeks."</p>
+            <p>- Jennifer L.</p>
+        </div>
+    </div>
 </body>
 </html>
